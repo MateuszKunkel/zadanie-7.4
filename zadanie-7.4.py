@@ -7,6 +7,7 @@ from datetime import date
 fake = Faker()
 today = date.today()
 
+
 class Film:
     def __init__(self, tytul, rok, gatunek):
         self.tytul = tytul
@@ -64,14 +65,14 @@ class Serial(Film):
 
 
 def get_movies():
-    
+
     movies_list = []
 
     for i in list:
-        if isinstance(i, Serial) == False:
+        if not isinstance(i, Serial):
             movies_list.append(i)
-        
-    by_movies = sorted(movies_list, key=lambda Film: Film.tytul)
+
+    by_movies = sorted(movies_list, key=lambda film: film.tytul)
     return by_movies
 
 
@@ -82,8 +83,8 @@ def get_series():
     for i in list:
         if isinstance(i, Serial):
             series_list.append(i)
-    
-    by_series = sorted(series_list, key=lambda Serial: Serial.tytul)
+
+    by_series = sorted(series_list, key=lambda serial: serial.tytul)
     return by_series
 
 
@@ -95,6 +96,7 @@ def search(title):
             print("Posiadamy to arcydzieło!")
     if is_found == 0:
         print("Brak wyników wyszukiwania")
+
 
 def generate_views():
     unnecessary_long_random_number_generator = random.randint(1, len(list))
@@ -114,7 +116,7 @@ def we_need_more_views():
 def top_3_titles():
 
     by_views_limited = []
-    by_views = sorted(list, reverse=True, key=lambda Film: Film._liczba)
+    by_views = sorted(list, reverse=True, key=lambda film: film._liczba)
     for i in range(3):
         by_views_limited.append(by_views[i])
     print(*by_views_limited, sep="\n")
@@ -210,19 +212,15 @@ if __name__ == "__main__":
 
     print("----------------------Biblioteka filmów----------------------")
     print(
-        "Uwaga, przykładowa biblioteka generowana jest losowo za pomocą *fakera*.\nNazwy seriali i filmów mogą okazać się... nietuzinkowe.\n-------------------------------------------------------------"
+        f"Uwaga, przykładowa biblioteka generowana jest losowo za pomocą *fakera*.\nNazwy seriali i filmów mogą okazać się... nietuzinkowe.\n{separator}"
     )
     thatday = today.strftime("%d.%m.%Y")
     print(f"Dzisiejsze ({thatday}) top 3 to:")
     top_3_titles()
     print(separator)
 
-    print(
-        "Czy chcesz zobaczyć listę wszystkich posiadanych filmów i seriali?"
-    )
-    choice1 = input(
-        "( Y / N ):"
-    )
+    print("Czy chcesz zobaczyć listę wszystkich posiadanych filmów i seriali?")
+    choice1 = input("( Y / N ):")
 
     if choice1 == "Y":
         print(*list, sep="\n")
@@ -233,7 +231,9 @@ if __name__ == "__main__":
     )
     choice2 = input("( Y / N ):")
     if choice2 == "Y":
-        print("Wybierz S jeśli seriale, F jeśli filmy\n(następne zapytanie dotyczyć będzie ilości obiektów na liście)")
+        print(
+            "Wybierz S jeśli seriale, F jeśli filmy\n(następne zapytanie dotyczyć będzie ilości obiektów na liście)"
+        )
         choice2_2 = input("( S / F ):")
         if choice2_2 == "S":
             print("wszystkie posiadane seriale ułożone alfabetycznie to:")
@@ -262,11 +262,11 @@ if __name__ == "__main__":
         "Czy chcesz wyszukać któreś konkretne wspaniałe dzieło sztuki filmowej? (polecenie nr. 8)\n( Y / N ):"
     )
     if task8 == "Y":
-        print("Upewnij się, że dobrze przepiszesz któryś z wyżej wypisanych tytułów i ZAKOŃCZYSZ GO KROPKĄ!")
-        print("Lub nie, kim ja jestem by ci kazać, meh.")
-        search(
-            input("O obecność której taśmy chcesz zapytać:")
+        print(
+            "Upewnij się, że dobrze przepiszesz któryś z wyżej wypisanych tytułów i ZAKOŃCZYSZ GO KROPKĄ!"
         )
+        print("Lub nie, kim ja jestem by ci kazać, meh.")
+        search(input("O obecność której taśmy chcesz zapytać:"))
     print(separator)
 
     task3 = input(
@@ -280,13 +280,24 @@ if __name__ == "__main__":
         print("Zanim zaczniej oglądać najważniejsze pytanie:")
         the_most_inportant_choice = input("Popcorn i orzeszki do seansu? ( Y / N )")
         if the_most_inportant_choice == "Y":
-            print(".______     ______   .______     ______   ______   .______      .__   __.  __  ")
-            print("|   _  \   /  __  \  |   _  \   /      | /  __  \  |   _  \     |  \ |  | |  | ")
-            print("|  |_)  | |  |  |  | |  |_)  | |  ,----'|  |  |  | |  |_)  |    |   \|  | |  | ")
-            print("|   ___/  |  |  |  | |   ___/  |  |     |  |  |  | |      /     |  . `  | |  | ")
-            print("|  |      |  `--'  | |  |      |  `----.|  `--'  | |  |\  \----.|  |\   | |__| ")
-            print("| _|       \______/  | _|       \______| \______/  | _| `._____||__| \__| (__) ")
+            print(
+                ".______     ______   .______     ______   ______   .______      .__   __.  __  "
+            )
+            print(
+                "|   _  \   /  __  \  |   _  \   /      | /  __  \  |   _  \     |  \ |  | |  | "
+            )
+            print(
+                "|  |_)  | |  |  |  | |  |_)  | |  ,----'|  |  |  | |  |_)  |    |   \|  | |  | "
+            )
+            print(
+                "|   ___/  |  |  |  | |   ___/  |  |     |  |  |  | |      /     |  . `  | |  | "
+            )
+            print(
+                "|  |      |  `--'  | |  |      |  `----.|  `--'  | |  |\  \----.|  |\   | |__| "
+            )
+            print(
+                "| _|       \______/  | _|       \______| \______/  | _| `._____||__| \__| (__) "
+            )
 
         list[one_more_choice - 1].play()
         print("Brawo, dodano wyświetlenie.")
-
