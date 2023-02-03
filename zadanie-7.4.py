@@ -1,5 +1,3 @@
-import sys
-import logging
 import random
 from faker import Faker
 from datetime import date
@@ -27,41 +25,58 @@ class Film:
 
 
 class Serial(Film):
-    def __init__(self, sezony, odcinki_na_sezon, *args, **kwargs):
+    def __init__(self, sezon, odcinek, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.sezony = sezony
-        self.odcinki_na_sezon = odcinki_na_sezon
-
-        self._wszystkie_odcinki = 0
+        self.sezon = sezon
+        self.odcinek = odcinek
 
     def __str__(self):
-        if self.sezony < 10:
-            if self.odcinki_na_sezon < 10:
-                return f"Serial {self.tytul} S0{self.sezony}E0{self.odcinki_na_sezon}"
-            else:
-                return f"Serial {self.tytul} S0{self.sezony}E{self.odcinki_na_sezon}"
-        else:
-            if self.odcinki_na_sezon < 10:
-                return f"Serial {self.tytul} S{self.sezony}E0{self.odcinki_na_sezon}"
-            else:
-                return f"Serial {self.tytul} S{self.sezony}E{self.odcinki_na_sezon}"
+        return f"Serial {self.tytul} S{self.sezon:02d}E{self.odcinek:02d}"
 
     def __repr__(self):
-        if self.sezony < 10:
-            if self.odcinki_na_sezon < 10:
-                return f"Serial {self.tytul} S0{self.sezony}E0{self.odcinki_na_sezon}"
-            else:
-                return f"Serial {self.tytul} S0{self.sezony}E{self.odcinki_na_sezon}"
-        else:
-            if self.odcinki_na_sezon < 10:
-                return f"Serial {self.tytul} S{self.sezony}E0{self.odcinki_na_sezon}"
-            else:
-                return f"Serial {self.tytul} S{self.sezony}E{self.odcinki_na_sezon}"
+        return f"Serial {self.tytul} S{self.sezon:02d}E{self.odcinek:02d}"
 
-    @property
-    def how_many_episodes(self):
-        self._wszystkie_odcinki = self.sezony * self.odcinki_na_sezon
-        return self._wszystkie_odcinki
+
+def add_full_season(par_tytul, par_rok, par_gatunek, par_sezon, par_ile):
+
+    tytul_serialu = str(par_tytul)
+    rok_serialu = int(par_rok)
+    gatunek_serialu = str(par_gatunek)
+    ktory_sezon = int(par_sezon)
+    ile_odcinkow = int(par_ile)
+
+    new_season_list = []
+
+    repeater = ile_odcinkow
+    ktory_odcinek = 1
+
+    while repeater > 0:
+        video = Serial(
+            tytul=tytul_serialu,
+            rok=rok_serialu,
+            gatunek=gatunek_serialu,
+            sezon=ktory_sezon,
+            odcinek=ktory_odcinek,
+        )
+        new_season_list.append(video)
+        repeater -= 1
+        ktory_odcinek += 1
+
+    list.extend(new_season_list)
+    print(
+        f"Do biblioteki dodano serial {tytul_serialu}, sezon {ktory_sezon} w ilości {ile_odcinkow} odcinków."
+    )
+
+
+def how_many_episodes(title):
+    jestem_tytulem = title
+    znalezione = search(jestem_tytulem)
+    how_many = 0
+    if znalezione:
+        for i in list:
+            if i.tytul == jestem_tytulem:
+                how_many += 1
+    print(f"Posiadamy łącznie {how_many} odcinków tego serialu")
 
 
 def get_movies():
@@ -89,21 +104,21 @@ def get_series():
 
 
 def search(title):
-    is_found = 0
+    par = title
+    is_found = False
     for element in list:
-        if element.tytul == title:
-            is_found += 1
+        if element.tytul == par:
             print("Posiadamy to arcydzieło!")
-    if is_found == 0:
+            is_found = True
+            break
+    if not is_found:
         print("Brak wyników wyszukiwania")
+    return is_found
 
 
 def generate_views():
-    unnecessary_long_random_number_generator = random.randint(1, len(list))
     views_amount = random.randint(1, 100)
-    while views_amount > 0:
-        list[unnecessary_long_random_number_generator - 1].play()
-        views_amount -= 1
+    random.choice(list)._liczba += views_amount
 
 
 def we_need_more_views():
@@ -113,36 +128,23 @@ def we_need_more_views():
         parameter -= 1
 
 
-def top_3_titles():
-
-    by_views_limited = []
-    by_views = sorted(list, reverse=True, key=lambda film: film._liczba)
-    for i in range(3):
-        by_views_limited.append(by_views[i])
-    print(*by_views_limited, sep="\n")
-
-
-def top_titles(amount, content_type):
+def top_titles(amount=3, content_type="All"):
 
     chosen_top = amount
+    by_views_limited = []
 
-    if content_type == "Film":
+    if content_type == "All":
+        totallist = list
+        by_views = sorted(totallist, reverse=True, key=lambda video: video._liczba)
 
-        by_views_limited = []
+    elif content_type == "Film":
         by_views = sorted(get_movies(), reverse=True, key=lambda video: video._liczba)
-        for i in range(chosen_top):
-            by_views_limited.append(by_views[i])
-        print("Najlepsze pod względem wyświetleń filmy to:")
-        print(*by_views_limited, sep="\n")
 
-    if content_type == "Serial":
-
-        by_views_limited = []
+    elif content_type == "Serial":
         by_views = sorted(get_series(), reverse=True, key=lambda video: video._liczba)
-        for i in range(chosen_top):
-            by_views_limited.append(by_views[i])
-        print("Najlepsze pod względem wyświetleń seriale to:")
-        print(*by_views_limited, sep="\n")
+
+    by_views_limited.extend(by_views[0:chosen_top])
+    print(*by_views_limited, sep="\n")
 
 
 def the_world_is_but_a_stage_and_the_stage_is_the_world_of_entertainment():
@@ -154,47 +156,41 @@ def the_world_is_but_a_stage_and_the_stage_is_the_world_of_entertainment():
 
         element = random.randint(0, 1)
 
+        gatunek_setter = (
+            fake.sentence(
+                nb_words=1,
+                variable_nb_words=False,
+                ext_word_list=[
+                    "comedy",
+                    "drama",
+                    "horror",
+                    "romance",
+                    "slice of life",
+                    "history",
+                    "true crime",
+                ],
+            ),
+        )
+
+        rok_setter = random.randint(1900, 2022)
+
         if element == 0:
             video = Film(
                 tytul=fake.sentence(nb_words=3, variable_nb_words=True),
-                rok=random.randint(1900, 2022),
-                gatunek=fake.sentence(
-                    nb_words=1,
-                    variable_nb_words=False,
-                    ext_word_list=[
-                        "comedy",
-                        "drama",
-                        "horror",
-                        "romance",
-                        "slice of life",
-                        "history",
-                        "true crime",
-                    ],
-                ),
+                rok=rok_setter,
+                gatunek=gatunek_setter,
             )
-            generic_library_list.append(video)
+
         else:
             video = Serial(
                 tytul=fake.sentence(nb_words=3, variable_nb_words=False),
-                rok=random.randint(1900, 2022),
-                gatunek=fake.sentence(
-                    nb_words=1,
-                    variable_nb_words=False,
-                    ext_word_list=[
-                        "comedy",
-                        "drama",
-                        "horror",
-                        "romance",
-                        "slice of life",
-                        "history",
-                        "true crime",
-                    ],
-                ),
-                sezony=random.randint(1, 10),
-                odcinki_na_sezon=random.randrange(10, 24, 2),
+                rok=rok_setter,
+                gatunek=gatunek_setter,
+                sezon=random.randint(1, 10),
+                odcinek=random.randint(1, 12),
             )
-            generic_library_list.append(video)
 
+        generic_library_list.append(video)
         generic_library_quantity -= 1
 
     return generic_library_list
@@ -216,7 +212,7 @@ if __name__ == "__main__":
     )
     thatday = today.strftime("%d.%m.%Y")
     print(f"Dzisiejsze ({thatday}) top 3 to:")
-    top_3_titles()
+    top_titles()
     print(separator)
 
     print("Czy chcesz zobaczyć listę wszystkich posiadanych filmów i seriali?")
@@ -224,6 +220,36 @@ if __name__ == "__main__":
 
     if choice1 == "Y":
         print(*list, sep="\n")
+    print(separator)
+
+    print(
+        f"Czy chcesz dodać do biblioteki dodatkowy serial? (dla chętnych nr. 1)\nJeśli tak, po fakcie będziesz miec możliwość wydrukowania ponownie całej biblioteki.\nPamiętaj tylko, że dodany serial nie posiada żadnych wyświetleń!"
+    )
+    task12 = input("( Y / N ):")
+
+    if task12 == "Y":
+        print(
+            f"Wpisz po kolei następujące informacje rozdzielone PRZECINKIEM I SPACJĄ (, )\ntytul_serialu, rok_serialu, gatunek_serialu, ktory_sezon, ile_odcinkow"
+        )
+        tyt, ro, gat, sez, odc = input().split(", ")
+        add_full_season(tyt, ro, gat, sez, odc)
+        print(f"Czy chcesz ponownie zobaczyć całą bibliotekę?")
+        bonus_input = input("( Y / N ):")
+        if bonus_input == "Y":
+            print(*list, sep="\n")
+    print(separator)
+
+    print(
+        "Czy chcesz sprawdzić ile odcinków wybranego serialu posiadamy? (dla chętnych nr. 2)"
+    )
+    task13 = input("( Y / N ):")
+
+    if task13 == "Y":
+        how_many_episodes(
+            input(
+                f"Podaj DOKŁADNY tytuł serialu. Nie zapomnij o wielkich literach czy kropkach, wszyscy tu jesteśmy (case) sensitive!\n"
+            )
+        )
     print(separator)
 
     print(
@@ -240,26 +266,28 @@ if __name__ == "__main__":
             print(*get_series(), sep="\n")
             print(separator)
             choice2_3 = int(input("Ile seriali ma być w topliście?:"))
+            print("Najlepsze pod względem wyświetleń seriale to:")
             top_titles(choice2_3, "Serial")
         elif choice2_2 == "F":
             print("wszystkie posiadane filmy ułożone alfabetycznie to:")
             print(*get_movies(), sep="\n")
             print(separator)
             choice2_3 = int(input("Ile filmów ma być w topliście?:"))
+            print("Najlepsze pod względem wyświetleń filmy to:")
             top_titles(choice2_3, "Film")
         else:
             print("zła litera, lecimy dalej")
     print(separator)
 
     task10 = input(
-        "Czy chcesz dodatkowo podbić ranking wyświetleń? (polecenie nr. 10)\n( Y / N ):"
+        f"Czy chcesz dodatkowo podbić ranking wyświetleń? (polecenie nr. 10)\n( Y / N ):"
     )
     if task10 == "Y":
         we_need_more_views()
     print(separator)
 
     task8 = input(
-        "Czy chcesz wyszukać któreś konkretne wspaniałe dzieło sztuki filmowej? (polecenie nr. 8)\n( Y / N ):"
+        f"Czy chcesz wyszukać któreś konkretne wspaniałe dzieło sztuki filmowej? (polecenie nr. 8)\n( Y / N ):"
     )
     if task8 == "Y":
         print(
@@ -270,7 +298,7 @@ if __name__ == "__main__":
     print(separator)
 
     task3 = input(
-        "Czy chcesz odtworzyć któreś z wyżej wypisanych arcydzieł kinematografii? (polecenie nr. 3)\n( Y / N ):"
+        f"Czy chcesz odtworzyć któreś z wyżej wypisanych arcydzieł kinematografii? (polecenie nr. 3)\n( Y / N ):"
     )
     if task3 == "Y":
         print("Wybierz z listy wszystkich materiałów który z kolei chcesz odtworzyć:")
@@ -278,7 +306,7 @@ if __name__ == "__main__":
         one_more_choice = int(input())
         print(separator)
         print("Zanim zaczniej oglądać najważniejsze pytanie:")
-        the_most_inportant_choice = input("Popcorn i orzeszki do seansu? ( Y / N )")
+        the_most_inportant_choice = input(f"Popcorn i orzeszki do seansu?\n( Y / N ):")
         if the_most_inportant_choice == "Y":
             print(
                 ".______     ______   .______     ______   ______   .______      .__   __.  __  "
