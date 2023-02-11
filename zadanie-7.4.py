@@ -69,22 +69,23 @@ def add_full_season(par_tytul, par_rok, par_gatunek, par_sezon, par_ile):
 
 
 def how_many_episodes(title):
+    imported_list = list
     jestem_tytulem = title
     znalezione = search(jestem_tytulem)
     how_many = 0
     if znalezione:
-        for i in list:
+        for i in imported_list:
             if i.tytul == jestem_tytulem:
                 how_many += 1
     print(f"Posiadamy łącznie {how_many} odcinków tego serialu")
 
 
 def get_movies():
-
+    imported_movies_list = list
     movies_list = []
 
-    for i in list:
-        if not isinstance(i, Serial):
+    for i in imported_movies_list:
+        if str(type(i)) == "<class '__main__.Film'>":   
             movies_list.append(i)
 
     by_movies = sorted(movies_list, key=lambda film: film.tytul)
@@ -92,11 +93,11 @@ def get_movies():
 
 
 def get_series():
-
+    imported_series_list = list
     series_list = []
 
-    for i in list:
-        if isinstance(i, Serial):
+    for i in imported_series_list:
+        if str(type(i)) == "<class '__main__.Serial'>":
             series_list.append(i)
 
     by_series = sorted(series_list, key=lambda serial: serial.tytul)
@@ -104,9 +105,10 @@ def get_series():
 
 
 def search(title):
+    imported_search_list = list
     par = title
     is_found = False
-    for element in list:
+    for element in imported_search_list:
         if element.tytul == par:
             print("Posiadamy to arcydzieło!")
             is_found = True
@@ -129,7 +131,7 @@ def we_need_more_views():
 
 
 def top_titles(amount=3, content_type="All"):
-
+    
     chosen_top = amount
     by_views_limited = []
 
