@@ -68,10 +68,10 @@ def add_full_season(par_tytul, par_rok, par_gatunek, par_sezon, par_ile):
     )
 
 
-def how_many_episodes(title):
-    imported_list = list
+def how_many_episodes(title, lista):
+    imported_list = lista
     jestem_tytulem = title
-    znalezione = search(jestem_tytulem)
+    znalezione = search(jestem_tytulem, lista=imported_list)
     how_many = 0
     if znalezione:
         for i in imported_list:
@@ -80,32 +80,20 @@ def how_many_episodes(title):
     print(f"Posiadamy łącznie {how_many} odcinków tego serialu")
 
 
-def get_movies():
-    imported_movies_list = list
-    movies_list = []
+def get_recording(recording_type, lista):
+    imported_recording_list = lista
+    recording_list = []
 
-    for i in imported_movies_list:
-        if str(type(i)) == "<class '__main__.Film'>":   
-            movies_list.append(i)
+    for i in imported_recording_list:
+        if (type(i)) == recording_type:
+            recording_list.append(i)
 
-    by_movies = sorted(movies_list, key=lambda film: film.tytul)
-    return by_movies
-
-
-def get_series():
-    imported_series_list = list
-    series_list = []
-
-    for i in imported_series_list:
-        if str(type(i)) == "<class '__main__.Serial'>":
-            series_list.append(i)
-
-    by_series = sorted(series_list, key=lambda serial: serial.tytul)
-    return by_series
+    by_recording = sorted(recording_list, key=lambda x: x.tytul)
+    return by_recording
 
 
-def search(title):
-    imported_search_list = list
+def search(title, lista):
+    imported_search_list = lista
     par = title
     is_found = False
     for element in imported_search_list:
@@ -130,20 +118,16 @@ def we_need_more_views():
         parameter -= 1
 
 
-def top_titles(amount=3, content_type="All"):
-    
+def top_titles(lista, amount=3, content_type="All"):
     chosen_top = amount
     by_views_limited = []
+    totallist = lista
 
     if content_type == "All":
-        totallist = list
         by_views = sorted(totallist, reverse=True, key=lambda video: video._liczba)
 
-    elif content_type == "Film":
-        by_views = sorted(get_movies(), reverse=True, key=lambda video: video._liczba)
-
-    elif content_type == "Serial":
-        by_views = sorted(get_series(), reverse=True, key=lambda video: video._liczba)
+    elif content_type != "All":
+        by_views = sorted(get_recording(content_type, totallist), reverse=True, key=lambda video: video._liczba)
 
     by_views_limited.extend(by_views[0:chosen_top])
     print(*by_views_limited, sep="\n")
@@ -214,7 +198,7 @@ if __name__ == "__main__":
     )
     thatday = today.strftime("%d.%m.%Y")
     print(f"Dzisiejsze ({thatday}) top 3 to:")
-    top_titles()
+    top_titles(lista=list)
     print(separator)
 
     print("Czy chcesz zobaczyć listę wszystkich posiadanych filmów i seriali?")
@@ -250,7 +234,7 @@ if __name__ == "__main__":
         how_many_episodes(
             input(
                 f"Podaj DOKŁADNY tytuł serialu. Nie zapomnij o wielkich literach czy kropkach, wszyscy tu jesteśmy (case) sensitive!\n"
-            )
+            ), list
         )
     print(separator)
 
@@ -264,19 +248,13 @@ if __name__ == "__main__":
         )
         choice2_2 = input("( S / F ):")
         if choice2_2 == "S":
-            print("wszystkie posiadane seriale ułożone alfabetycznie to:")
-            print(*get_series(), sep="\n")
-            print(separator)
             choice2_3 = int(input("Ile seriali ma być w topliście?:"))
             print("Najlepsze pod względem wyświetleń seriale to:")
-            top_titles(choice2_3, "Serial")
+            top_titles(list, choice2_3, Serial)
         elif choice2_2 == "F":
-            print("wszystkie posiadane filmy ułożone alfabetycznie to:")
-            print(*get_movies(), sep="\n")
-            print(separator)
             choice2_3 = int(input("Ile filmów ma być w topliście?:"))
             print("Najlepsze pod względem wyświetleń filmy to:")
-            top_titles(choice2_3, "Film")
+            top_titles(list, choice2_3, Film)
         else:
             print("zła litera, lecimy dalej")
     print(separator)
@@ -296,7 +274,7 @@ if __name__ == "__main__":
             "Upewnij się, że dobrze przepiszesz któryś z wyżej wypisanych tytułów i ZAKOŃCZYSZ GO KROPKĄ!"
         )
         print("Lub nie, kim ja jestem by ci kazać, meh.")
-        search(input("O obecność której taśmy chcesz zapytać:"))
+        search(input("O obecność której taśmy chcesz zapytać:"), list)
     print(separator)
 
     task3 = input(
