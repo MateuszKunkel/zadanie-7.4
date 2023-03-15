@@ -15,13 +15,18 @@ class Film:
         self._liczba = 0
 
     def __str__(self):
-        return f"Film {self.tytul} ({self.rok})"
+        return f"Film {self.tytul} ({self.rok}) Wyświetlenia {self._liczba}"
 
     def __repr__(self):
-        return f"Film {self.tytul} ({self.rok})"
+        return f"Film {self.tytul} ({self.rok}) Wyświetlenia {self._liczba}"
 
-    def play(self):
-        self._liczba += 1
+    @property
+    def liczba(self):
+        return self._liczba
+
+    @liczba.setter
+    def liczba(self, value):
+        self._liczba += value
 
 
 class Serial(Film):
@@ -31,14 +36,13 @@ class Serial(Film):
         self.odcinek = odcinek
 
     def __str__(self):
-        return f"Serial {self.tytul} S{self.sezon:02d}E{self.odcinek:02d}"
+        return f"Serial {self.tytul} S{self.sezon:02d}E{self.odcinek:02d} Wyświetlenia {self._liczba}"
 
     def __repr__(self):
-        return f"Serial {self.tytul} S{self.sezon:02d}E{self.odcinek:02d}"
+        return f"Serial {self.tytul} S{self.sezon:02d}E{self.odcinek:02d} Wyświetlenia {self._liczba}"
 
 
 def add_full_season(par_tytul, par_rok, par_gatunek, par_sezon, par_ile):
-
     tytul_serialu = str(par_tytul)
     rok_serialu = int(par_rok)
     gatunek_serialu = str(par_gatunek)
@@ -85,11 +89,19 @@ def get_recording(recording_type, lista):
     recording_list = []
 
     for i in imported_recording_list:
-        if (type(i)) == recording_type:
+        if str(type(i)) == f"<class '__main__.{recording_type}'>":
             recording_list.append(i)
 
     by_recording = sorted(recording_list, key=lambda x: x.tytul)
     return by_recording
+
+
+def get_movies(cont, lista):
+    return get_recording(recording_type=cont, lista=lista)
+
+
+def get_series(cont, lista):
+    return get_recording(recording_type=cont, lista=lista)
 
 
 def search(title, lista):
@@ -106,15 +118,15 @@ def search(title, lista):
     return is_found
 
 
-def generate_views():
+def generate_views(listaa):
     views_amount = random.randint(1, 100)
-    random.choice(list)._liczba += views_amount
+    random.choice(listaa).liczba = views_amount
 
 
-def we_need_more_views():
+def we_need_more_views(lista):
     parameter = 10
     while parameter > 0:
-        generate_views()
+        generate_views(lista)
         parameter -= 1
 
 
@@ -124,22 +136,31 @@ def top_titles(lista, amount=3, content_type="All"):
     totallist = lista
 
     if content_type == "All":
-        by_views = sorted(totallist, reverse=True, key=lambda video: video._liczba)
+        by_views = sorted(totallist, reverse=True, key=lambda video: video.liczba)
 
-    elif content_type != "All":
-        by_views = sorted(get_recording(content_type, totallist), reverse=True, key=lambda video: video._liczba)
+    elif content_type == "Serial":
+        by_views = sorted(
+            get_series(content_type, totallist),
+            reverse=True,
+            key=lambda video: video.liczba,
+        )
+
+    elif content_type == "Film":
+        by_views = sorted(
+            get_movies(content_type, totallist),
+            reverse=True,
+            key=lambda video: video.liczba,
+        )
 
     by_views_limited.extend(by_views[0:chosen_top])
     print(*by_views_limited, sep="\n")
 
 
 def the_world_is_but_a_stage_and_the_stage_is_the_world_of_entertainment():
-
     generic_library_list = []
     generic_library_quantity = 20
 
     while generic_library_quantity > 0:
-
         element = random.randint(0, 1)
 
         gatunek_setter = (
@@ -183,13 +204,12 @@ def the_world_is_but_a_stage_and_the_stage_is_the_world_of_entertainment():
 
 
 if __name__ == "__main__":
-
     separator = "-------------------------------------------------------------"
 
     list = the_world_is_but_a_stage_and_the_stage_is_the_world_of_entertainment()
     start_variable = 10
     while start_variable > 0:
-        we_need_more_views()
+        we_need_more_views(lista=list)
         start_variable -= 1
 
     print("----------------------Biblioteka filmów----------------------")
@@ -234,7 +254,8 @@ if __name__ == "__main__":
         how_many_episodes(
             input(
                 f"Podaj DOKŁADNY tytuł serialu. Nie zapomnij o wielkich literach czy kropkach, wszyscy tu jesteśmy (case) sensitive!\n"
-            ), list
+            ),
+            list,
         )
     print(separator)
 
@@ -250,11 +271,11 @@ if __name__ == "__main__":
         if choice2_2 == "S":
             choice2_3 = int(input("Ile seriali ma być w topliście?:"))
             print("Najlepsze pod względem wyświetleń seriale to:")
-            top_titles(list, choice2_3, Serial)
+            top_titles(list, choice2_3, "Serial")
         elif choice2_2 == "F":
             choice2_3 = int(input("Ile filmów ma być w topliście?:"))
             print("Najlepsze pod względem wyświetleń filmy to:")
-            top_titles(list, choice2_3, Film)
+            top_titles(list, choice2_3, "Film")
         else:
             print("zła litera, lecimy dalej")
     print(separator)
@@ -263,7 +284,7 @@ if __name__ == "__main__":
         f"Czy chcesz dodatkowo podbić ranking wyświetleń? (polecenie nr. 10)\n( Y / N ):"
     )
     if task10 == "Y":
-        we_need_more_views()
+        we_need_more_views(lista=list)
     print(separator)
 
     task8 = input(
@@ -307,5 +328,5 @@ if __name__ == "__main__":
                 "| _|       \______/  | _|       \______| \______/  | _| `._____||__| \__| (__) "
             )
 
-        list[one_more_choice - 1].play()
+        list[one_more_choice - 1].liczba()
         print("Brawo, dodano wyświetlenie.")
