@@ -26,7 +26,7 @@ class Film:
 
     @liczba.setter
     def liczba(self, value):
-        self._liczba += value
+        self._liczba = value
 
 
 class Serial(Film):
@@ -89,7 +89,7 @@ def get_recording(recording_type, lista):
     recording_list = []
 
     for i in imported_recording_list:
-        if str(type(i)) == f"<class '__main__.{recording_type}'>":
+        if (type(i)) == recording_type:
             recording_list.append(i)
 
     by_recording = sorted(recording_list, key=lambda x: x.tytul)
@@ -120,7 +120,7 @@ def search(title, lista):
 
 def generate_views(listaa):
     views_amount = random.randint(1, 100)
-    random.choice(listaa).liczba = views_amount
+    random.choice(listaa).liczba += views_amount
 
 
 def we_need_more_views(lista):
@@ -130,27 +130,21 @@ def we_need_more_views(lista):
         parameter -= 1
 
 
-def top_titles(lista, amount=3, content_type="All"):
+def top_titles(lista, amount=3, content_type=None):
     chosen_top = amount
     by_views_limited = []
     totallist = lista
 
-    if content_type == "All":
-        by_views = sorted(totallist, reverse=True, key=lambda video: video.liczba)
-
-    elif content_type == "Serial":
+    if content_type:
         by_views = sorted(
+            # nieistotne czy wykonam tutaj get_series czy get_movies, efekt kodu dalej będzie taki sam, i w zaleznosci od wyszukiwania filmu czy serialu odpowie poprawnie.
+            # get_movies(content_type, totallist)
             get_series(content_type, totallist),
             reverse=True,
             key=lambda video: video.liczba,
         )
-
-    elif content_type == "Film":
-        by_views = sorted(
-            get_movies(content_type, totallist),
-            reverse=True,
-            key=lambda video: video.liczba,
-        )
+    else:
+        by_views = sorted(totallist, reverse=True, key=lambda video: video.liczba)
 
     by_views_limited.extend(by_views[0:chosen_top])
     print(*by_views_limited, sep="\n")
@@ -271,11 +265,11 @@ if __name__ == "__main__":
         if choice2_2 == "S":
             choice2_3 = int(input("Ile seriali ma być w topliście?:"))
             print("Najlepsze pod względem wyświetleń seriale to:")
-            top_titles(list, choice2_3, "Serial")
+            top_titles(list, choice2_3, Serial)
         elif choice2_2 == "F":
             choice2_3 = int(input("Ile filmów ma być w topliście?:"))
             print("Najlepsze pod względem wyświetleń filmy to:")
-            top_titles(list, choice2_3, "Film")
+            top_titles(list, choice2_3, Film)
         else:
             print("zła litera, lecimy dalej")
     print(separator)
@@ -328,5 +322,6 @@ if __name__ == "__main__":
                 "| _|       \______/  | _|       \______| \______/  | _| `._____||__| \__| (__) "
             )
 
-        list[one_more_choice - 1].liczba()
+        list[one_more_choice - 1].liczba += 1
+
         print("Brawo, dodano wyświetlenie.")
