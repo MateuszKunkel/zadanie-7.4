@@ -89,19 +89,19 @@ def get_recording(recording_type, lista):
     recording_list = []
 
     for i in imported_recording_list:
-        if (type(i)) == recording_type:
+        if type(i) == recording_type:
             recording_list.append(i)
 
     by_recording = sorted(recording_list, key=lambda x: x.tytul)
     return by_recording
 
 
-def get_movies(cont, lista):
-    return get_recording(recording_type=cont, lista=lista)
+def get_movies(lista):
+    return get_recording(recording_type=Film, lista=lista)
 
 
-def get_series(cont, lista):
-    return get_recording(recording_type=cont, lista=lista)
+def get_series(lista):
+    return get_recording(recording_type=Serial, lista=lista)
 
 
 def search(title, lista):
@@ -136,13 +136,11 @@ def top_titles(lista, amount=3, content_type=None):
     totallist = lista
 
     if content_type:
-        by_views = sorted(
-            # nieistotne czy wykonam tutaj get_series czy get_movies, efekt kodu dalej będzie taki sam, i w zaleznosci od wyszukiwania filmu czy serialu odpowie poprawnie.
-            # get_movies(content_type, totallist)
-            get_series(content_type, totallist),
-            reverse=True,
-            key=lambda video: video.liczba,
-        )
+        if content_type == Serial:
+            zwrot = get_series(lista=totallist)
+        elif content_type == Film:
+            zwrot = get_movies(lista=totallist)
+        by_views = sorted(zwrot, reverse=True, key=lambda video: video.liczba)
     else:
         by_views = sorted(totallist, reverse=True, key=lambda video: video.liczba)
 
